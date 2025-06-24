@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambio de Estilo al Clic</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .elemento-cambiante {
+            width: 250px;
+            height: 150px;
+            margin: 30px auto;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            transform: scale(1);
+        }
+
+        .elemento-cambiante:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .boton-cambio {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 10px;
+        }
+
+        .boton-cambio:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+        }
+
+        .boton-cambio:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(79, 172, 254, 0.4);
+        }
+
+        .contador {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.1em;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+        }
+
+        /* Estilos para diferentes colores de fondo */
+        .color-1 { background: linear-gradient(135deg, #ff6b6b, #ee5a52); }
+        .color-2 { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
+        .color-3 { background: linear-gradient(135deg, #45b7d1, #96c93d); }
+        .color-4 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .color-5 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .color-6 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .color-7 { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .color-8 { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+        .color-9 { background: linear-gradient(135deg, #d299c2, #fef9d7); }
+        .color-10 { background: linear-gradient(135deg, #89f7fe, #66a6ff); }
+
+        @keyframes pulso {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .pulso {
+            animation: pulso 0.6s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Cambio de Estilo</h1>
+        
+        <div id="elementoCambiante" class="elemento-cambiante color-1">
+            <span>¡Haz clic para cambiarme!</span>
+        </div>
+        
+        <button id="botonCambio" class="boton-cambio">
+            🌈 Cambiar Color
+        </button>
+        
+        <div class="contador">
+            <span>Cambios realizados: </span>
+            <span id="contadorCambios">0</span>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let contadorCambios = 0;
+        let colorActual = 1;
+        const totalColores = 10;
+        
+        // Obtener referencias a los elementos
+        const elementoCambiante = document.getElementById('elementoCambiante');
+        const botonCambio = document.getElementById('botonCambio');
+        const contadorDisplay = document.getElementById('contadorCambios');
+        
+        // Array con mensajes dinámicos
+        const mensajes = [
+            "¡Haz clic para cambiarme!",
+            "¡Wow, me encanta este color!",
+            "¡Sigue cambiándome!",
+            "¡Cada vez me veo mejor!",
+            "¡Este color es genial!",
+            "¡Me siento renovado!",
+            "¡Qué transformación!",
+            "¡Increíble cambio!",
+            "¡Soy como un camaleón!",
+            "¡Nunca me canso de cambiar!"
+        ];
+        
+        // Función para cambiar el estilo
+        function cambiarEstilo() {
+            // Incrementar contador
+            contadorCambios++;
+            
+            // Cambiar al siguiente color
+            colorActual = (colorActual % totalColores) + 1;
+            
+            // Remover todas las clases de color previas
+            for (let i = 1; i <= totalColores; i++) {
+                elementoCambiante.classList.remove(`color-${i}`);
+            }
+            
+            // Agregar la nueva clase de color
+            elementoCambiante.classList.add(`color-${colorActual}`);
+            
+            // Agregar efecto de pulso
+            elementoCambiante.classList.add('pulso');
+            
+            // Remover la clase de pulso después de la animación
+            setTimeout(() => {
+                elementoCambiante.classList.remove('pulso');
+            }, 600);
+            
+            // Cambiar el texto dentro del elemento
+            const mensaje = mensajes[Math.floor(Math.random() * mensajes.length)];
+            elementoCambiante.querySelector('span').textContent = mensaje;
+            
+            // Actualizar el contador en pantalla
+            contadorDisplay.textContent = contadorCambios;
+            
+            // Cambiar el texto del botón ocasionalmente
+            if (contadorCambios % 5 === 0) {
+                botonCambio.textContent = `🎉 ¡${contadorCambios} cambios!`;
+                setTimeout(() => {
+                    botonCambio.textContent = "🌈 Cambiar Color";
+                }, 2000);
+            }
+        }
+        
+        // Agregar evento de clic al botón
+        botonCambio.addEventListener('click', cambiarEstilo);
+        
+        // Agregar evento de clic al elemento cambiante también
+        elementoCambiante.addEventListener('click', cambiarEstilo);
+        
+        // Evento para cambiar con la tecla Espacio
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                event.preventDefault(); // Evitar el scroll de la página
+                cambiarEstilo();
+            }
+        });
+        
+        // Mostrar un mensaje de bienvenida después de 2 segundos
+        setTimeout(() => {
+            alert('💡 Tip: También puedes hacer clic en el elemento colorido o presionar la tecla Espacio para cambiar el color!');
+        }, 2000);
+    </script>
+</body>
+</html>
