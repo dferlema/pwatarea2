@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Tarea2 - Programación Web Avanzada</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6a0572; /* Deep Plum */
+            --secondary-color: #92409f; /* Lighter Plum */
+            --accent-color: #d1b3c4;   /* Soft Lavender */
+            --text-dark: #333333;
+            --text-light: #f9f9f9;
+            --background-light: #f9f9f9;
+            --card-background: #ffffff;
+            --shadow-light: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--background-light);
+            margin: 0;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-dark);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            font-size: 2.8em;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px var(--shadow-light);
+            overflow: hidden;
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+            text-align: center;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--accent-color);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px var(--shadow-hover);
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .card-description {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            flex-grow: 1; /* Allows description to take up available space */
+        }
+
+        .card-link {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            padding: 14px 30px;
+            border-radius: 50px; /* Pill shape */
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            font-size: 1.05em;
+            letter-spacing: 0.5px;
+        }
+
+        .card-link:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* JavaScript interactivity styles (added/removed by JS) */
+        .card.active {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-color), 0 12px 30px var(--shadow-hover);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2em;
+            }
+            .menu-container {
+                grid-template-columns: 1fr; /* Stack cards on small screens */
+                padding: 10px;
+            }
+            .card {
+                padding: 25px;
+            }
+            .card-title {
+                font-size: 1.6em;
+            }
+            .card-link {
+                padding: 12px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Tarea 2: Programación Web Avanzada</h1>
+
+    <div class="menu-container">
+        <div class="card" data-exercise="ej01">
+            <h2 class="card-title">Ejercicio 01</h2>
+            <p class="card-description">Cambio de Estilo al Clic.</p>
+            <a href="ej01.html" class="card-link">Ver Ejercicio</a>
+        </div>
+
+        <div class="card" data-exercise="ej02">
+            <h2 class="card-title">Ejercicio 02</h2>
+            <p class="card-description">Calculadora Simple</p>
+            <a href="ej02.html" class="card-link">Ver Ejercicio</a>
+        </div>
+
+        <div class="card" data-exercise="ej03">
+            <h2 class="card-title">Ejercicio 03</h2>
+            <p class="card-description">Cambio de Imagen al Pasar el Ratón</p>
+            <a href="ej03.html" class="card-link">Ver Ejercicio</a>
+        </div>
+
+        <div class="card" data-exercise="ej04">
+            <h2 class="card-title">Ejercicio 04</h2>
+            <p class="card-description">Reloj Analógico</p>
+            <a href="ej04.html" class="card-link">Ver Ejercicio</a>
+        </div>
+
+        <div class="card" data-exercise="ej05">
+            <h2 class="card-title">Ejercicio 05</h2>
+            <p class="card-description">Validación de Formulario</p>
+            <a href="ej05.html" class="card-link">Ver Ejercicio</a>
+        </div>
+
+        <div class="card" data-exercise="ej06">
+            <h2 class="card-title">Ejercicio 06</h2>
+            <p class="card-description">Lista de Tareas Interactiva</p>
+            <a href="ej06.html" class="card-link">Ver Ejercicio</a>
+        </div>
+
+        <div class="card" data-exercise="ej07">
+            <h2 class="card-title">Ejercicio 07</h2>
+            <p class="card-description">Menú de Navegación Desplegable</p>
+            <a href="ej07.html" class="card-link">Ver Ejercicio</a>
+        </div>
+
+        <div class="card" data-exercise="ej08">
+            <h2 class="card-title">Ejercicio 08</h2>
+            <p class="card-description">Carrusel de Imágenes</p>
+            <a href="ej08.html" class="card-link">Ver Ejercicio</a>
+        </div>
+
+        <div class="card" data-exercise="ej09">
+            <h2 class="card-title">Ejercicio 09</h2>
+            <p class="card-description">Temporizador de Cuenta Regresiva</p>
+            <a href="ej09.html" class="card-link">Ver Ejercicio</a>
+        </div>
+
+        <div class="card" data-exercise="ej10">
+            <h2 class="card-title">Ejercicio 10</h2>
+            <p class="card-description">Juego de Preguntas y Respuestas</p>
+            <a href="ej10.html" class="card-link">Ver Ejercicio</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card');
+
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    // Add a class for visual feedback on hover (optional, as CSS handles most)
+                    // card.classList.add('active'); // Uncomment if you want a border on hover via JS
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    // card.classList.remove('active'); // Uncomment if you use the above line
+                });
+
+                // Optional: Add a subtle click effect or highlight
+                card.addEventListener('click', (event) => {
+                    // Prevent default link behavior if you want to do something else
+                    // event.preventDefault();
+
+                    // Remove active class from all other cards
+                    cards.forEach(otherCard => {
+                        if (otherCard !== card) {
+                            otherCard.classList.remove('active');
+                        }
+                    });
+                    // Toggle active class on the clicked card
+                    card.classList.toggle('active');
+
+                    // If you want to navigate after the animation, you can use a timeout
+                    // const link = card.querySelector('.card-link');
+                    // if (link) {
+                    //     setTimeout(() => {
+                    //         window.location.href = link.href;
+                    //     }, 300); // Navigate after 300ms
+                    // }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
