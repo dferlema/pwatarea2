@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambio de Imagen al Pasar el Ratón</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .titulo {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .galeria {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .imagen-container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .imagen-container:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .imagen-wrapper {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .imagen {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 15px;
+        }
+
+        .imagen.fade-out {
+            opacity: 0;
+            transform: scale(1.1);
+        }
+
+        .imagen.zoom {
+            transform: scale(1.1);
+        }
+
+        .imagen.slide-left {
+            transform: translateX(-20px);
+            opacity: 0.8;
+        }
+
+        .imagen.slide-right {
+            transform: translateX(20px);
+            opacity: 0.8;
+        }
+
+        .descripcion {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .titulo-imagen {
+            color: white;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitulo-imagen {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .contador-hover {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        .imagen-wrapper:hover .overlay {
+            opacity: 1;
+        }
+
+        .imagen-principal {
+            grid-column: 1 / -1;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .imagen-principal .imagen-wrapper {
+            height: 400px;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stats h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .stat-item {
+            display: inline-block;
+            margin: 0 20px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1em;
+        }
+
+        .stat-number {
+            font-weight: bold;
+            color: #4facfe;
+            font-size: 1.3em;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        .instrucciones {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .instrucciones p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .galeria {
+                grid-template-columns: 1fr;
+            }
+            
+            .titulo {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="titulo">🖼️ Galería Interactiva</h1>
+        
+        <div class="instrucciones">
+            <p>✨ Pasa el ratón sobre las imágenes para ver el efecto de transición mágico</p>
+        </div>
+
+        <div class="galeria">
+            <!-- Imagen Principal -->
+            <div class="imagen-container imagen-principal">
+                <div class="imagen-wrapper" data-efecto="fade">
+                    <img src="https://picsum.photos/600/400?random=1" 
+                         alt="Paisaje Principal" 
+                         class="imagen"
+                         data-hover="https://picsum.photos/600/400?random=2">
+                    <div class="overlay"></div>
+                    <div class="contador-hover">🎯 <span class="contador">0</span></div>
+                </div>
+                <div class="descripcion">
+                    <div class="titulo-imagen">🌅 Paisaje Mágico</div>
+                    <div class="subtitulo-imagen">Una vista espectacular que cambia con tu presencia</div>
+                </div>
+            </div>
+
+            <!-- Imagen 1 -->
+            <div class="imagen-container">
+                <div class="imagen-wrapper" data-efecto="zoom">
+                    <img src="https://picsum.photos/300/250?random=3" 
+                         alt="Naturaleza" 
+                         class="imagen"
+                         data-hover="https://picsum.photos/300/250?random=4">
+                    <div class="overlay"></div>
+                    <div class="contador-hover">🎯 <span class="contador">0</span></div>
+                </div>
+                <div class="descripcion">
+                    <div class="titulo-imagen">🌳 Naturaleza Viva</div>
+                    <div class="subtitulo-imagen">Efecto zoom suave</div>
+                </div>
+            </div>
+
+            <!-- Imagen 2 -->
+            <div class="imagen-container">
+                <div class="imagen-wrapper" data-efecto="slide-left">
+                    <img src="https://picsum.photos/300/250?random=5" 
+                         alt="Arquitectura" 
+                         class="imagen"
+                         data-hover="https://picsum.photos/300/250?random=6">
+                    <div class="overlay"></div>
+                    <div class="contador-hover">🎯 <span class="contador">0</span></div>
+                </div>
+                <div class="descripcion">
+                    <div class="titulo-imagen">🏛️ Arquitectura</div>
+                    <div class="subtitulo-imagen">Deslizamiento lateral</div>
+                </div>
+            </div>
+
+            <!-- Imagen 3 -->
+            <div class="imagen-container">
+                <div class="imagen-wrapper" data-efecto="slide-right">
+                    <img src="https://picsum.photos/300/250?random=7" 
+                         alt="Vida Urbana" 
+                         class="imagen"
+                         data-hover="https://picsum.photos/300/250?random=8">
+                    <div class="overlay"></div>
+                    <div class="contador-hover">🎯 <span class="contador">0</span></div>
+                </div>
+                <div class="descripcion">
+                    <div class="titulo-imagen">🏙️ Vida Urbana</div>
+                    <div class="subtitulo-imagen">Movimiento dinámico</div>
+                </div>
+            </div>
+
+            <!-- Imagen 4 -->
+            <div class="imagen-container">
+                <div class="imagen-wrapper" data-efecto="fade">
+                    <img src="https://picsum.photos/300/250?random=9" 
+                         alt="Océano" 
+                         class="imagen"
+                         data-hover="https://picsum.photos/300/250?random=10">
+                    <div class="overlay"></div>
+                    <div class="contador-hover">🎯 <span class="contador">0</span></div>
+                </div>
+                <div class="descripcion">
+                    <div class="titulo-imagen">🌊 Océano Infinito</div>
+                    <div class="subtitulo-imagen">Transición suave</div>
+                </div>
+            </div>
+
+            <!-- Imagen 5 -->
+            <div class="imagen-container">
+                <div class="imagen-wrapper" data-efecto="zoom">
+                    <img src="https://picsum.photos/300/250?random=11" 
+                         alt="Montañas" 
+                         class="imagen"
+                         data-hover="https://picsum.photos/300/250?random=12">
+                    <div class="overlay"></div>
+                    <div class="contador-hover">🎯 <span class="contador">0</span></div>
+                </div>
+                <div class="descripcion">
+                    <div class="titulo-imagen">⛰️ Montañas Majestuosas</div>
+                    <div class="subtitulo-imagen">Acercamiento espectacular</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <h3>📊 Estadísticas de Interacción</h3>
+            <div class="stat-item">
+                Total de Hovers: <span class="stat-number" id="totalHovers">0</span>
+            </div>
+            <div class="stat-item">
+                Imagen Favorita: <span class="stat-number" id="imagenFavorita">Ninguna</span>
+            </div>
+            <div class="stat-item">
+                Efectos Activados: <span class="stat-number" id="efectosActivados">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let totalHovers = 0;
+        let efectosActivados = 0;
+        let contadorPorImagen = {};
+        let imagenConMasHovers = { nombre: 'Ninguna', cantidad: 0 };
+
+        // Obtener todas las imágenes
+        const imagenesWrappers = document.querySelectorAll('.imagen-wrapper');
+        const imagenes = document.querySelectorAll('.imagen');
+
+        // Precargar imágenes hover para evitar delay
+        function precargarImagenes() {
+            imagenes.forEach(img => {
+                const hoverSrc = img.getAttribute('data-hover');
+                if (hoverSrc) {
+                    const preloadImg = new Image();
+                    preloadImg.src = hoverSrc;
+                }
+            });
+        }
+
+        // Función para cambiar imagen en hover
+        function cambiarImagen(img, isHover) {
+            const originalSrc = img.src;
+            const hoverSrc = img.getAttribute('data-hover');
+            const wrapper = img.closest('.imagen-wrapper');
+            const efecto = wrapper.getAttribute('data-efecto');
+            
+            if (isHover && hoverSrc) {
+                // Aplicar efecto visual
+                aplicarEfecto(img, efecto, true);
+                
+                // Cambiar imagen después de un pequeño delay para el efecto
+                setTimeout(() => {
+                    img.src = hoverSrc;
+                    img.setAttribute('data-original', originalSrc);
+                }, 100);
+                
+                // Actualizar contador
+                actualizarContador(wrapper, img);
+                
+            } else {
+                // Restaurar imagen original
+                const originalSrc = img.getAttribute('data-original');
+                if (originalSrc) {
+                    img.src = originalSrc;
+                }
+                
+                // Quitar efectos
+                aplicarEfecto(img, efecto, false);
+            }
+        }
+
+        // Función para aplicar efectos visuales
+        function aplicarEfecto(img, efecto, aplicar) {
+            img.classList.remove('fade-out', 'zoom', 'slide-left', 'slide-right');
+            
+            if (aplicar) {
+                switch(efecto) {
+                    case 'fade':
+                        img.classList.add('fade-out');
+                        setTimeout(() => {
+                            img.classList.remove('fade-out');
+                        }, 200);
+                        break;
+                    case 'zoom':
+                        img.classList.add('zoom');
+                        break;
+                    case 'slide-left':
+                        img.classList.add('slide-left');
+                        break;
+                    case 'slide-right':
+                        img.classList.add('slide-right');
+                        break;
+                }
+                efectosActivados++;
+            }
+        }
+
+        // Función para actualizar contadores
+        function actualizarContador(wrapper, img) {
+            const contador = wrapper.querySelector('.contador');
+            const tituloImagen = wrapper.closest('.imagen-container').querySelector('.titulo-imagen').textContent;
+            
+            // Actualizar contador individual
+            let count = parseInt(contador.textContent) + 1;
+            contador.textContent = count;
+            
+            // Actualizar contador global
+            totalHovers++;
+            
+            // Actualizar registro por imagen
+            contadorPorImagen[tituloImagen] = count;
+            
+            // Encontrar imagen favorita
+            if (count > imagenConMasHovers.cantidad) {
+                imagenConMasHovers = { nombre: tituloImagen, cantidad: count };
+            }
+            
+            // Efecto visual en contador
+            contador.parentElement.classList.add('pulse');
+            setTimeout(() => {
+                contador.parentElement.classList.remove('pulse');
+            }, 600);
+            
+            // Actualizar estadísticas
+            actualizarEstadisticas();
+        }
+
+        // Función para actualizar estadísticas
+        function actualizarEstadisticas() {
+            document.getElementById('totalHovers').textContent = totalHovers;
+            document.getElementById('imagenFavorita').textContent = imagenConMasHovers.nombre;
+            document.getElementById('efectosActivados').textContent = efectosActivados;
+        }
+
+        // Agregar event listeners a todas las imágenes
+        imagenes.forEach(img => {
+            // Guardar src original
+            img.setAttribute('data-original', img.src);
+            
+            // Evento mouseenter (cuando el ratón entra)
+            img.addEventListener('mouseenter', () => {
+                cambiarImagen(img, true);
+            });
+            
+            // Evento mouseleave (cuando el ratón sale)
+            img.addEventListener('mouseleave', () => {
+                cambiarImagen(img, false);
+            });
+            
+            // Evento click para efecto adicional
+            img.addEventListener('click', () => {
+                const container = img.closest('.imagen-container');
+                container.classList.add('pulse');
+                setTimeout(() => {
+                    container.classList.remove('pulse');
+                }, 600);
+            });
+        });
+
+        // Inicialización
+        window.addEventListener('load', () => {
+            precargarImagenes();
+            
+            // Mensaje de bienvenida
+            setTimeout(() => {
+                alert('🎨 ¡Bienvenido a la Galería Interactiva!\n\n' +
+                      '✨ Funcionalidades:\n' +
+                      '• Pasa el ratón sobre las imágenes para cambiarlas\n' +
+                      '• Cada imagen tiene un efecto de transición único\n' +
+                      '• Haz clic en las imágenes para un efecto especial\n' +
+                      '• Observa las estadísticas en tiempo real\n\n' +
+                      '¡Disfruta explorando!');
+            }, 1500);
+        });
+
+        // Efecto de paralaje suave en el scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const containers = document.querySelectorAll('.imagen-container');
+            
+            containers.forEach((container, index) => {
+                const speed = 0.5 + (index * 0.1);
+                const yPos = -(scrolled * speed);
+                container.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+
+        // Función para manejar el redimensionamiento de ventana
+        window.addEventListener('resize', () => {
+            // Reinicializar efectos si es necesario
+            imagenes.forEach(img => {
+                img.classList.remove('fade-out', 'zoom', 'slide-left', 'slide-right');
+            });
+        });
+    </script>
+</body>
+</html>

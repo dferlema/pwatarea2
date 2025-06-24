@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - Cultura General</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+        }
+
+        .quiz-title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .quiz-subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .question-container {
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .options-container {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .option.correct {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .option.incorrect {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .results-container {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-excellent {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .score-good {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+        }
+
+        .score-poor {
+            background: linear-gradient(45deg, #dc3545, #e83e8c);
+        }
+
+        .results-text {
+            font-size: 1.3em;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        .results-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .quiz-title {
+                font-size: 2em;
+            }
+            
+            .question-text {
+                font-size: 1.2em;
+            }
+            
+            .navigation-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1 class="quiz-title">🧠 Quiz Challenge</h1>
+            <p class="quiz-subtitle">Pon a prueba tus conocimientos</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent" class="quiz-content">
+            <div class="question-container">
+                <div class="question-number" id="questionNumber">Pregunta 1 de 10</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options-container" id="optionsContainer"></div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>
+                    ← Anterior
+                </button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+
+        <div id="resultsContainer" class="results-container">
+            <h2>🎉 ¡Quiz Completado!</h2>
+            <div class="score-circle" id="scoreCircle">
+                <span id="finalScore">0/10</span>
+            </div>
+            <div class="results-text" id="resultsText"></div>
+            <div class="results-details" id="resultsDetails"></div>
+            <button class="btn btn-primary" onclick="restartQuiz()">
+                🔄 Jugar de Nuevo
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "¿Cuál es el planeta más grande del sistema solar?",
+                options: ["Tierra", "Júpiter", "Saturno", "Marte"],
+                correct: 1
+            },
+            {
+                question: "¿En qué año llegó el hombre a la Luna?",
+                options: ["1967", "1968", "1969", "1970"],
+                correct: 2
+            },
+            {
+                question: "¿Cuál es la capital de Australia?",
+                options: ["Sídney", "Melbourne", "Canberra", "Perth"],
+                correct: 2
+            },
+            {
+                question: "¿Quién escribió 'Cien años de soledad'?",
+                options: ["Mario Vargas Llosa", "Gabriel García Márquez", "Jorge Luis Borges", "Pablo Neruda"],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es el elemento químico más abundante en el universo?",
+                options: ["Oxígeno", "Carbono", "Hidrógeno", "Helio"],
+                correct: 2
+            },
+            {
+                question: "¿En qué continente se encuentra el desierto de Gobi?",
+                options: ["África", "Asia", "América", "Australia"],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es la moneda oficial de Japón?",
+                options: ["Won", "Yuan", "Yen", "Dong"],
+                correct: 2
+            },
+            {
+                question: "¿Quién pintó 'La noche estrellada'?",
+                options: ["Pablo Picasso", "Vincent van Gogh", "Leonardo da Vinci", "Claude Monet"],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es el río más largo del mundo?",
+                options: ["Amazonas", "Nilo", "Yangtsé", "Misisipi"],
+                correct: 1
+            },
+            {
+                question: "¿En qué año se fundó la ONU?",
+                options: ["1944", "1945", "1946", "1947"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = [];
+        let answered = false;
+
+        function initQuiz() {
+            displayQuestion();
+            updateProgress();
+        }
+
+        function displayQuestion() {
+            const q = questions[currentQuestion];
+            
+            document.getElementById('questionNumber').textContent = 
+                `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+            
+            document.getElementById('questionText').textContent = q.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.onclick = () => selectOption(index);
+                optionElement.id = `option${index}`;
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            answered = false;
+            updateNavigationButtons();
+        }
+
+        function selectOption(selectedIndex) {
+            if (answered) return;
+            
+            // Marcar opción seleccionada
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            document.getElementById(`option${selectedIndex}`).classList.add('selected');
+            
+            // Guardar respuesta
+            userAnswers[currentQuestion] = selectedIndex;
+            
+            // Mostrar resultado después de un breve delay
+            setTimeout(() => {
+                showAnswer(selectedIndex);
+            }, 500);
+        }
+
+        function showAnswer(selectedIndex) {
+            answered = true;
+            const correctIndex = questions[currentQuestion].correct;
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach((option, index) => {
+                option.classList.add('disabled');
+                if (index === correctIndex) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex && index !== correctIndex) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            if (selectedIndex === correctIndex) {
+                score++;
+                document.getElementById(`option${selectedIndex}`).classList.add('pulse');
+            }
+            
+            updateNavigationButtons();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+                updateProgress();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.disabled = !answered;
+            
+            if (currentQuestion === questions.length - 1 && answered) {
+                nextBtn.textContent = 'Ver Resultados 🏆';
+            } else {
+                nextBtn.textContent = 'Siguiente →';
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            
+            const scoreCircle = document.getElementById('scoreCircle');
+            const finalScore = document.getElementById('finalScore');
+            const resultsText = document.getElementById('resultsText');
+            const resultsDetails = document.getElementById('resultsDetails');
+            
+            finalScore.textContent = `${score}/${questions.length}`;
+            
+            const percentage = (score / questions.length) * 100;
+            
+            // Determinar color del círculo y mensaje
+            if (percentage >= 80) {
+                scoreCircle.className = 'score-circle score-excellent';
+                resultsText.textContent = '¡Excelente! Tienes un conocimiento muy amplio.';
+            } else if (percentage >= 60) {
+                scoreCircle.className = 'score-circle score-good';
+                resultsText.textContent = 'Buen trabajo. Tienes buenos conocimientos generales.';
+            } else {
+                scoreCircle.className = 'score-circle score-poor';
+                resultsText.textContent = 'Sigue estudiando. Hay mucho por aprender.';
+            }
+            
+            // Mostrar detalles de respuestas
+            let detailsHTML = '<h3>Detalles de tus respuestas:</h3>';
+            questions.forEach((q, index) => {
+                const userAnswer = userAnswers[index];
+                const correct = userAnswer === q.correct;
+                const icon = correct ? '✅' : '❌';
+                
+                detailsHTML += `
+                    <div style="margin: 10px 0; padding: 10px; border-left: 3px solid ${correct ? '#28a745' : '#dc3545'};">
+                        <strong>${icon} Pregunta ${index + 1}:</strong> ${q.question}<br>
+                        <small>Tu respuesta: ${q.options[userAnswer]} ${correct ? '(Correcta)' : '(Incorrecta)'}</small>
+                        ${!correct ? `<br><small>Respuesta correcta: ${q.options[q.correct]}</small>` : ''}
+                    </div>
+                `;
+            });
+            
+            resultsDetails.innerHTML = detailsHTML;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = [];
+            answered = false;
+            
+            document.getElementById('quizContent').style.display = 'block';
+            document.getElementById('resultsContainer').style.display = 'none';
+            
+            initQuiz();
+        }
+
+        // Inicializar el quiz al cargar la página
+        window.onload = function() {
+            initQuiz();
+        };
+    </script>
+</body>
+</html>

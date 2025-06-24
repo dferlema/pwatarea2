@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrusel de Imágenes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .carousel-container {
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .carousel-header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+        }
+
+        .carousel-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            width: 500%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .carousel-slide {
+            width: 20%;
+            height: 100%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 30px 20px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-slide:hover .slide-overlay {
+            transform: translateY(0);
+        }
+
+        .slide-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .slide-description {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .carousel-nav:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .carousel-nav.prev {
+            left: 20px;
+        }
+
+        .carousel-nav.next {
+            right: 20px;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            gap: 10px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .indicator.active {
+            background: #ff6b6b;
+            transform: scale(1.3);
+        }
+
+        .indicator:hover {
+            background: #ff9999;
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .play-pause {
+            background: #28a745;
+            color: white;
+        }
+
+        .play-pause:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .play-pause.paused {
+            background: #dc3545;
+        }
+
+        .play-pause.paused:hover {
+            background: #c82333;
+        }
+
+        .speed-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .speed-btn:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e9ecef;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        @media (max-width: 768px) {
+            .carousel-container {
+                margin: 10px;
+            }
+            
+            .carousel-wrapper {
+                height: 300px;
+            }
+            
+            .carousel-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .carousel-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel-container">
+        <div class="carousel-header">
+            <h1>🎨 Galería de Arte Digital</h1>
+            <p>Explora estas increíbles obras de arte</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="carousel-wrapper">
+            <div class="carousel-track" id="carouselTrack">
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=400&fit=crop" alt="Arte Abstracto">
+                    <div class="slide-overlay">
+                        <div class="slide-title">Arte Abstracto Moderno</div>
+                        <div class="slide-description">Una expresión vibrante de colores y formas que desafía la percepción tradicional.</div>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="Pintura Digital">
+                    <div class="slide-overlay">
+                        <div class="slide-title">Pintura Digital</div>
+                        <div class="slide-description">La fusión perfecta entre tecnología y arte tradicional en el mundo digital.</div>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1549277513-f1b32fe1f8f5?w=800&h=400&fit=crop" alt="Arte Contemporáneo">
+                    <div class="slide-overlay">
+                        <div class="slide-title">Arte Contemporáneo</div>
+                        <div class="slide-description">Obras que reflejan la sociedad actual con técnicas innovadoras y conceptos frescos.</div>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=800&h=400&fit=crop" alt="Ilustración Creativa">
+                    <div class="slide-overlay">
+                        <div class="slide-title">Ilustración Creativa</div>
+                        <div class="slide-description">Narrativas visuales que transportan al espectador a mundos imaginarios únicos.</div>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=400&fit=crop" alt="Arte Geométrico">
+                    <div class="slide-overlay">
+                        <div class="slide-title">Arte Geométrico</div>
+                        <div class="slide-description">La precisión matemática encuentra su expresión más bella en formas y patrones.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="carousel-nav prev" id="prevBtn">‹</button>
+            <button class="carousel-nav next" id="nextBtn">›</button>
+        </div>
+        
+        <div class="carousel-indicators" id="indicators">
+            <button class="indicator active" data-slide="0"></button>
+            <button class="indicator" data-slide="1"></button>
+            <button class="indicator" data-slide="2"></button>
+            <button class="indicator" data-slide="3"></button>
+            <button class="indicator" data-slide="4"></button>
+        </div>
+        
+        <div class="carousel-controls">
+            <button class="control-btn play-pause" id="playPauseBtn">⏸️ Pausar</button>
+            <button class="control-btn speed-btn" id="speedBtn">🚀 Velocidad: Normal</button>
+        </div>
+    </div>
+
+    <script>
+        class ImageCarousel {
+            constructor() {
+                this.currentSlide = 0;
+                this.totalSlides = 5;
+                this.isPlaying = true;
+                this.speeds = [2000, 3000, 5000]; // milisegundos
+                this.currentSpeedIndex = 1;
+                this.speedNames = ['Rápida', 'Normal', 'Lenta'];
+                this.autoPlayInterval = null;
+                this.progressInterval = null;
+                this.progressValue = 0;
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.startAutoPlay();
+                this.startProgressBar();
+            }
+            
+            initializeElements() {
+                this.track = document.getElementById('carouselTrack');
+                this.prevBtn = document.getElementById('prevBtn');
+                this.nextBtn = document.getElementById('nextBtn');
+                this.playPauseBtn = document.getElementById('playPauseBtn');
+                this.speedBtn = document.getElementById('speedBtn');
+                this.indicators = document.querySelectorAll('.indicator');
+                this.progressFill = document.getElementById('progressFill');
+            }
+            
+            setupEventListeners() {
+                this.prevBtn.addEventListener('click', () => this.prevSlide());
+                this.nextBtn.addEventListener('click', () => this.nextSlide());
+                this.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+                this.speedBtn.addEventListener('click', () => this.changeSpeed());
+                
+                this.indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => this.goToSlide(index));
+                });
+                
+                // Pausar al pasar el mouse sobre el carrusel
+                const carouselWrapper = document.querySelector('.carousel-wrapper');
+                carouselWrapper.addEventListener('mouseenter', () => {
+                    if (this.isPlaying) {
+                        this.pauseAutoPlay();
+                    }
+                });
+                
+                carouselWrapper.addEventListener('mouseleave', () => {
+                    if (this.isPlaying) {
+                        this.startAutoPlay();
+                    }
+                });
+                
+                // Soporte para teclado
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') this.prevSlide();
+                    if (e.key === 'ArrowRight') this.nextSlide();
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                        this.togglePlayPause();
+                    }
+                });
+                
+                // Soporte para gestos táctiles básicos
+                let touchStartX = 0;
+                carouselWrapper.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                });
+                
+                carouselWrapper.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const diff = touchStartX - touchEndX;
+                    
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) {
+                            this.nextSlide();
+                        } else {
+                            this.prevSlide();
+                        }
+                    }
+                });
+            }
+            
+            updateSlidePosition() {
+                const translateX = -this.currentSlide * 20;
+                this.track.style.transform = `translateX(${translateX}%)`;
+                this.updateIndicators();
+                this.resetProgressBar();
+            }
+            
+            updateIndicators() {
+                this.indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === this.currentSlide);
+                });
+            }
+            
+            nextSlide() {
+                this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+                this.updateSlidePosition();
+            }
+            
+            prevSlide() {
+                this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+                this.updateSlidePosition();
+            }
+            
+            goToSlide(index) {
+                this.currentSlide = index;
+                this.updateSlidePosition();
+            }
+            
+            startAutoPlay() {
+                if (this.autoPlayInterval) {
+                    clearInterval(this.autoPlayInterval);
+                }
+                
+                this.autoPlayInterval = setInterval(() => {
+                    this.nextSlide();
+                }, this.speeds[this.currentSpeedIndex]);
+            }
+            
+            pauseAutoPlay() {
+                if (this.autoPlayInterval) {
+                    clearInterval(this.autoPlayInterval);
+                    this.autoPlayInterval = null;
+                }
+            }
+            
+            togglePlayPause() {
+                this.isPlaying = !this.isPlaying;
+                
+                if (this.isPlaying) {
+                    this.playPauseBtn.innerHTML = '⏸️ Pausar';
+                    this.playPauseBtn.classList.remove('paused');
+                    this.startAutoPlay();
+                    this.startProgressBar();
+                } else {
+                    this.playPauseBtn.innerHTML = '▶️ Reproducir';
+                    this.playPauseBtn.classList.add('paused');
+                    this.pauseAutoPlay();
+                    this.pauseProgressBar();
+                }
+            }
+            
+            changeSpeed() {
+                this.currentSpeedIndex = (this.currentSpeedIndex + 1) % this.speeds.length;
+                this.speedBtn.innerHTML = `🚀 Velocidad: ${this.speedNames[this.currentSpeedIndex]}`;
+                
+                if (this.isPlaying) {
+                    this.startAutoPlay();
+                    this.startProgressBar();
+                }
+            }
+            
+            startProgressBar() {
+                if (this.progressInterval) {
+                    clearInterval(this.progressInterval);
+                }
+                
+                this.progressValue = 0;
+                const increment = 100 / (this.speeds[this.currentSpeedIndex] / 50);
+                
+                this.progressInterval = setInterval(() => {
+                    this.progressValue += increment;
+                    this.progressFill.style.width = `${this.progressValue}%`;
+                    
+                    if (this.progressValue >= 100) {
+                        this.progressValue = 0;
+                    }
+                }, 50);
+            }
+            
+            pauseProgressBar() {
+                if (this.progressInterval) {
+                    clearInterval(this.progressInterval);
+                    this.progressInterval = null;
+                }
+            }
+            
+            resetProgressBar() {
+                this.progressValue = 0;
+                this.progressFill.style.width = '0%';
+                if (this.isPlaying) {
+                    this.startProgressBar();
+                }
+            }
+        }
+        
+        // Inicializar el carrusel cuando se carga la página
+        window.addEventListener('DOMContentLoaded', () => {
+            new ImageCarousel();
+        });
+    </script>
+</body>
+</html>
